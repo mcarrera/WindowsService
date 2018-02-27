@@ -1,6 +1,6 @@
 ﻿namespace WindowsService1
 {
-    partial class Service1
+    partial class TempFilesCounterService
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,9 +31,9 @@
             this.eventLog1 = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             // 
-            // Service1
+            // TempFilesCounterService
             // 
-            this.ServiceName = "Service1";
+            this.ServiceName = "TempFilesCounterService";
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
 
         }

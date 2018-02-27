@@ -1,43 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices; 
 
 namespace WindowsService1
 {
-    public partial class Service1 : ServiceBase
+    public partial class TempFilesCounterService : ServiceBase
     {
-        private int eventId = 1;
-
-        public Service1()
+        private int _eventId = 1;
+        private const string EventLogName = "TempFilesCounterService";
+        private const string EventLogSource = "TempFilesService";
+        private BackgroundWorker _backgroundWorker;
+        public TempFilesCounterService()
         {
+          
             InitializeComponent();
-            eventLog1 = new System.Diagnostics.EventLog();
-            if (!System.Diagnostics.EventLog.SourceExists("MySource")) 
-            {         
-                System.Diagnostics.EventLog.CreateEventSource(
-                    "MySource","MyNewLog");
+            eventLog1 = new EventLog();
+            if (!EventLog.SourceExists(EventLogSource))
+            {
+                EventLog.CreateEventSource(EventLogSource, EventLogName);
             }
-            eventLog1.Source = "MySource";
-            eventLog1.Log = "MyNewLog";
+
+            eventLog1.Source = EventLogSource;
+            eventLog1.Log = EventLogName;
+            // Set up a background worker
+            _backgroundWorker = new BackgroundWorker
+            {
+                WorkerSupportsCancellation = true,
+                WorkerReportsProgress = true
+            };
             // Set up a timer to trigger every minute.  
-            System.Timers.Timer timer = new System.Timers.Timer();  
-            timer.Interval = 60000; // 60 seconds  
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);  
-            timer.Start();  
+            var timer = new System.Timers.Timer {Interval = 60000}; // 60 seconds  
+            timer.Elapsed += OnTimer;
+            timer.Start();
         }
 
-        public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)  
-        {  
+        private void OnTimer(object sender, System.Timers.ElapsedEventArgs args)  
+        {
             // TODO: Insert monitoring activities here.  
-            eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);  
-        }  
+            eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, _eventId++);  
+        }
 
         protected override void OnStart(string[] args)
         {
@@ -48,12 +51,12 @@ namespace WindowsService1
                 dwWaitHint = 100000
             };
             
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);  
+            SetServiceStatus(ServiceHandle, ref serviceStatus);  
             eventLog1.WriteEntry("In OnStart");
             
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;  
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);  
+            SetServiceStatus(ServiceHandle, ref serviceStatus);  
         }
 
         protected override void OnStop()

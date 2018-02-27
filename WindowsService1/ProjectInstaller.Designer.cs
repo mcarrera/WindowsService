@@ -41,7 +41,7 @@
             // 
             this.serviceInstaller1.Description = "Test service";
             this.serviceInstaller1.DisplayName = "Service 1";
-            this.serviceInstaller1.ServiceName = "Service1";
+            this.serviceInstaller1.ServiceName = "TempFilesCounterService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

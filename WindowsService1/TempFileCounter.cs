@@ -17,10 +17,12 @@ namespace WindowsService1
         private int _eventId = 1;
         private const string EventLogName = "TempFilesCounter";
         private const string EventLogSource = "TempFilesCounterService";
+        private BackgroundWorker Baa;
 
         public TempFilesCounterService()
         {
             InitializeComponent();
+            // set up a new event log
             eventLog = new EventLog();
             if (!EventLog.SourceExists("MySource"))
             {
@@ -28,9 +30,14 @@ namespace WindowsService1
             }
             eventLog.Source = EventLogName;
             eventLog.Log = EventLogSource;
-            // Set up a timer to trigger every minute.  
-            var timer = new System.Timers.Timer { Interval = 60000 };    // 60 seconds  
 
+            // set up a background worker
+            backGroundWorker = new BackgroundWorker();
+            backGroundWorker.WorkerReportsProgress = true;
+            backGroundWorker.WorkerSupportsCancellation = true;
+
+            // set up a timer to trigger every minute.  
+            var timer = new System.Timers.Timer { Interval = 60000 };    // 60 seconds  
             timer.Elapsed += OnTimer;
             timer.Start();
         }
